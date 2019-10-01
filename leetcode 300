@@ -1,0 +1,49 @@
+leetcode 300 Longest Increasing Subsequence
+方法一：
+动态规划
+新建一个与nums长度相同的数组dp
+dp[i]为以i结尾的最长升序字串长度
+返回dp最大值即可
+时间复杂度O(n^2)
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        if (nums.length == 0)
+            return 0;
+        int[] dp = new int[nums.length];
+        int result = 0;
+        for (int i = 0;i < nums.length;i++)
+            dp[i] = 1;
+        for (int i = 0;i < nums.length;i++) {
+            for (int j = 0;j < i;j++) {
+                if (nums[i] > nums[j] && dp[j] + 1 > dp[i])
+                    dp[i] = dp[j] + 1;
+            }
+            result = Math.max(result,dp[i]);
+        }
+        return result;
+    }
+}
+方法二：
+动态规划+二分查找+贪心
+首先初始化一个最长升序子列数组(dp)
+对于输入数组(nums)内每一个元素，若他比dp内最大的元素还大，则我们将其放在数组末端
+若不然，我们将其放在保证dp有序的位置，并替换掉dp内最小的比他大的元素，保证dp长度不变(贪心的思想，dp内元素当然是越小越容易使得dp长度增加)
+查找位置我们使用二分查找(O(log(l)))
+共进行n次上述操作，即总时间复杂度为O(nlogn)
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[] dp = new int[nums.length];
+        int len = 0;
+        for (int num : nums) {
+            int i = Arrays.binarySearch(dp, 0, len, num);
+            if (i < 0) {
+                i = -(i + 1);
+            }
+            dp[i] = num;
+            if (i == len) {
+                len++;
+            }
+        }
+        return len;
+    }
+}
